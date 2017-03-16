@@ -2,14 +2,14 @@ autowx
 ==============================
 This is a rewrite of rtlsdr-automated-wxsat-capture.
 
-Automate Recording of Low Earth Orbit NOAA Weather Satellites
-License:  GPLv2 or any later version
+Automate Recording of Low Earth Orbit NOAA & Meteor Weather Satellites
+License:  MIT
 
-assumptions: Linux-based computer, rtl-sdr usb dongle, stationary antenna, experienced python user
+assumptions: Linux-based computer, rtl-sdr usb dongle, stationary antenna, experienced python & Linux user
 
-goal:  record wav files for later processing, postprocess wav file, generate image, send images using SCP
+goal:  record wav files for later processing, postprocess wav file, generate image, send images using SCP. Decode Meteor M2 images.
 
-prerequistes:  working rtl-sdr, nsat/pypredict libraries, basic python libraries (subprocess, os, re, sys, time, datetime), sox, setup noaa.py/pypredict.py 
+prerequistes:  working rtl-sdr, nsat/pypredict libraries, basic python libraries (subprocess, os, re, sys, time, datetime), tledraw uses matplotlib+pylab+numpy, sox, gnuradio, XvFB, WINE, Oleg LRPT Offline decoder, setup noaa.py/pypredict.py, setup all scripts
 
 NO WARRANTY:  ALL USE IS AT THE RISK OF THE USER.  These are scripts I use for hobbyist purposes.  There may
 be pre-requisites or system configuration differences which you will need to resolve in order to make use of these scripts in your project.  To do so requires patience and and, quite often, previous experience programming python 
@@ -20,7 +20,7 @@ This program also uses software which has no clear licensing information (wxtoim
 ##FILES
 
 ###LICENSE 
-General Public License version 2.0, or any later version
+MIT 
 
 ###BASIC usage info
 Prerequisites:
