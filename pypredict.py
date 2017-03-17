@@ -1,3 +1,6 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
 import predict
 import time
 
@@ -31,8 +34,12 @@ def aoslos(satname,minElev,minElevMeteor,stationLat,stationLon,stationAlt,tleFil
     minElevMeteor=int(minElevMeteor)
 # Recording delay
     opoznienie='1'
+# delay meteor to ~12° - 15°
+    meteor_delay='180'
 # Recording short
     skrocenie='1'
+# Shorten meteor recording by ~12° - 15°
+    meteor_short='180'
 # Predicting
     if satname in "NOAA 15":
 	p = predict.transits(tleNOAA15, qth)
@@ -66,8 +73,8 @@ def aoslos(satname,minElev,minElevMeteor,stationLat,stationLon,stationAlt,tleFil
 	p = predict.transits(tleMETEOR, qth)
 	for i in range(1,20):
 	    transit = p.next()
-	    przelot_start=int(transit.start)+int(opoznienie)
-	    przelot_czas=int(transit.duration())-(int(skrocenie)+int(opoznienie))
+	    przelot_start=int(transit.start)+int(meteor_delay)
+	    przelot_czas=int(transit.duration())-(int(meteor_short)+int(meteor_delay))
 	    przelot_koniec = int(przelot_start)+int(przelot_czas)
 	    if int(transit.peak()['elevation'])>=minElevMeteor:
 		return(int(przelot_start), int(przelot_koniec), int(przelot_czas), int(transit.peak()['elevation']))

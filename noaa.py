@@ -42,7 +42,7 @@ tleFile='weather.txt'
 # Minimum elevation
 minElev='20'
 minElevMeteor='35'
-decodeMeteor='yes'
+decodeMeteor='no'
 # Should I remove RAWs after transcoding?
 removeRAW='yes'
 # Directories used in this program
@@ -263,7 +263,7 @@ def createoverlay(fname,aosTime,satName,recLen):
     overlay_log.close()
 
 def decodeQPSK():
-    subprocess.Popen(systemDir+'/meteor_decode.sh')
+    subprocess.Popen(systemDir+'/decode_meteor.sh')
 
 def decode(fname,aosTime,satName,maxElev,recLen):
     xfNoSpace=xfname.replace(" ","")
