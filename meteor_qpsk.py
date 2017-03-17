@@ -47,10 +47,13 @@ class create_lrpt_config():
 	l.write("rgb=122.jpg\r\n")
 	l.write("rgb_q=100\r\n")
 #	l.write("mono=jpg\r\n")
-	l.write("logs=yes\r\n")
-	l.write("APID70=yes\r\n")
-	l.write("VCDU=yes\r\n")
+	l.write("logs=no\r\n")
+	l.write("APID70=no\r\n")
+	l.write("VCDU=no\r\n")
 	l.write("path="+IMAGES_WINDOWS_DIR+"\r\n")
+	l.write("[GEO]\r\n")
+	l.write("RoughStartTimeUTC="+datetime.now().strftime("%d.%m.%Y")+"\r\n")
+	l.write("TleFileName="+BITSTREAM_WINDOWS_DIR+"m2.txt\r\n")
 	l.close
 
 	if os.path.isfile(mono_lrpt_file):
@@ -64,10 +67,13 @@ class create_lrpt_config():
 	m.write("rgb=555.jpg\r\n")
 	m.write("rgb_q=100\r\n")
 	m.write("mono=jpg\r\n")
-	m.write("logs=yes\r\n")
-	m.write("APID70=yes\r\n")
-	m.write("VCDU=yes\r\n")
+	m.write("logs=no\r\n")
+	m.write("APID70=no\r\n")
+	m.write("VCDU=no\r\n")
 	m.write("path="+IMAGES_WINDOWS_DIR+"\r\n")
+	l.write("[GEO]\r\n")
+	l.write("RoughStartTimeUTC="+datetime.now().strftime("%d.%m.%Y")+"\r\n")
+	l.write("TleFileName="+BITSTREAM_WINDOWS_DIR+"m2.txt\r\n")
 	m.close
 
 class atomus_meteor_nogui(gr.top_block):
@@ -78,8 +84,8 @@ class atomus_meteor_nogui(gr.top_block):
         ##################################################
         # Variables
         ##################################################
-        self.samp_rate_airspy = samp_rate_airspy = 937500
-        self.decim = decim = 6
+        self.samp_rate_airspy = samp_rate_airspy = 1406250
+        self.decim = decim = 9
         self.symb_rate = symb_rate = 72000
         self.samp_rate = samp_rate = samp_rate_airspy/decim
         self.sps = sps = (samp_rate*1.0)/(symb_rate*1.0)
