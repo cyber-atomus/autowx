@@ -21,11 +21,14 @@ import os
 import os, shutil
 import sys
 
-bitstream_dir = '/opt/wxsat/rec'
-lrpt_dir = '/opt/wxsat/lrpt/'
+meteor_decode_script = '/PATH_TO_SCRIPTS/meteor_decode.sh'
+bitstream_dir = 'PATH_TO_BITSTREAM_FILES'
+lrpt_dir = 'PATH_TO_OLEG_OFFLINE_DECODER'
+image_dir = '/opt/wxsat/img/MeteorMN2/'
 
 bitstream_file = "meteor_LRPT_" + datetime.now().strftime("%d%m%Y_%H%M") + ".s"
 bitstream_name = bitstream_dir+"meteor_LRPT_" + datetime.now().strftime("%d%m%Y_%H%M") + ".s"
+image_name = image_dir+"meteor_LRPT_" + datetime.now().strftime("%d%m%Y_%H%M") + ".bmp"
 
 rgb_lrpt_file = lrpt_dir+"rgb.ini"
 mono_lrpt_file = lrpt_dir+"mono.ini"
@@ -51,9 +54,6 @@ class create_lrpt_config():
 	l.write("APID70=no\r\n")
 	l.write("VCDU=no\r\n")
 	l.write("path="+IMAGES_WINDOWS_DIR+"\r\n")
-	l.write("[GEO]\r\n")
-	l.write("RoughStartTimeUTC="+datetime.now().strftime("%d.%m.%Y")+"\r\n")
-	l.write("TleFileName="+BITSTREAM_WINDOWS_DIR+"m2.txt\r\n")
 	l.close
 
 	if os.path.isfile(mono_lrpt_file):
@@ -71,10 +71,18 @@ class create_lrpt_config():
 	m.write("APID70=no\r\n")
 	m.write("VCDU=no\r\n")
 	m.write("path="+IMAGES_WINDOWS_DIR+"\r\n")
-	l.write("[GEO]\r\n")
-	l.write("RoughStartTimeUTC="+datetime.now().strftime("%d.%m.%Y")+"\r\n")
-	l.write("TleFileName="+BITSTREAM_WINDOWS_DIR+"m2.txt\r\n")
 	m.close
+
+	if os.path.isfile(meteor_decode_script):
+	    os.unlink(meteor_decode_script)
+	g=open(meteor_decode_script,'w+')
+	g.write("#!/bin/bash\n")
+	g.write("\n")
+	g.write("/usr/local/bin/medet "+bitstream_name+" "+image_name+" >/tmp/METEOR_DECODE.log 2>&1\n")
+	g.write("convert "+image_name+".bmp "+image_name+".jpg")
+	g.write("\n")
+	g.close
+	os.chmod(meteor_decode_script, 0755)
 
 class atomus_meteor_nogui(gr.top_block):
 
@@ -89,10 +97,10 @@ class atomus_meteor_nogui(gr.top_block):
         self.symb_rate = symb_rate = 72000
         self.samp_rate = samp_rate = samp_rate_airspy/decim
         self.sps = sps = (samp_rate*1.0)/(symb_rate*1.0)
-        self.rfgain_static = rfgain_static = 48
-        self.ppm_r = ppm_r = 63
+        self.rfgain_static = rfgain_static = 49.6
+        self.ppm_r = ppm_r = 42
         self.pll_alpha_static = pll_alpha_static = 0.001
-        self.ifgain_static = ifgain_static = 48
+        self.ifgain_static = ifgain_static = 49.6
         self.freq = freq = 137900000
         self.clock_alpha_static = clock_alpha_static = 0.001
         self.bitstream_name = bitstream_name
