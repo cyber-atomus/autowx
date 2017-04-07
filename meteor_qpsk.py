@@ -1,9 +1,11 @@
-#!/usr/bin/env python
+#!/usr/bin/env python2
+# -*- coding: utf-8 -*-
 ##################################################
-# Gnuradio Python Flow Graph
-# Title: Meteor QPSK LRPT NOGUI DOOPLER IN 
-# Author: otti i at
-# Generated: Thu Mar 16 19:02:08 2017
+# GNU Radio Python Flow Graph
+# Title: Meteor QPSK soft-division generator
+# Author: at
+# Description: This file will receive Meteor MN2 using RTL-SDR and will create 72k soft-division file. It has no GUI. Ctrl+C or something like that kills the program. Based on original by otti.
+# Generated: Fri Apr  7 07:15:12 2017
 ##################################################
 
 from datetime import datetime
@@ -16,6 +18,8 @@ from gnuradio import gr
 from gnuradio.eng_option import eng_option
 from gnuradio.filter import firdes
 from optparse import OptionParser
+import osmosdr
+import time
 import osmosdr
 import os
 import os, shutil
@@ -84,23 +88,30 @@ class create_lrpt_config():
 	g.close
 	os.chmod(meteor_decode_script, 0755)
 
-class atomus_meteor_nogui(gr.top_block):
 
-    def __init__(self):
-        gr.top_block.__init__(self, "Meteor QPSK LRPT NOGUI DOOPLER IN ")
+class meteor_qpsk(gr.top_block):
+
+    def __init__(self, ppm=63):
+        gr.top_block.__init__(self, "Meteor QPSK soft-division generator")
+
+        ##################################################
+        # Parameters
+        ##################################################
+        self.ppm = ppm
 
         ##################################################
         # Variables
         ##################################################
-        self.samp_rate_airspy = samp_rate_airspy = 1406250
+        self.samp_rate_rtl = samp_rate_rtl = 1406250
         self.decim = decim = 9
         self.symb_rate = symb_rate = 72000
-        self.samp_rate = samp_rate = samp_rate_airspy/decim
+        self.samp_rate = samp_rate = samp_rate_rtl/decim
+        self.output_dir = output_dir = bitstream_dir
         self.sps = sps = (samp_rate*1.0)/(symb_rate*1.0)
-        self.rfgain_static = rfgain_static = 49.6
-        self.ppm_r = ppm_r = 42
-        self.pll_alpha_static = pll_alpha_static = 0.001
-        self.ifgain_static = ifgain_static = 49.6
+        self.rfgain_static = rfgain_static = 43
+        self.ppm_static = ppm_static = 63
+        self.pll_alpha_static = pll_alpha_static = 0.015
+        self.ifgain_static = ifgain_static = 43
         self.freq = freq = 137900000
         self.clock_alpha_static = clock_alpha_static = 0.001
         self.bitstream_name = bitstream_name
@@ -108,17 +119,17 @@ class atomus_meteor_nogui(gr.top_block):
         ##################################################
         # Blocks
         ##################################################
-        self.rtlsdr_source_0 = osmosdr.source( args="numchan=" + str(1) + " " + "" )
-        self.rtlsdr_source_0.set_sample_rate(samp_rate_airspy)
+        self.rtlsdr_source_0 = osmosdr.source( args="numchan=" + str(1) + " " + '' )
+        self.rtlsdr_source_0.set_sample_rate(samp_rate_rtl)
         self.rtlsdr_source_0.set_center_freq(freq, 0)
-        self.rtlsdr_source_0.set_freq_corr(ppm_r, 0)
+        self.rtlsdr_source_0.set_freq_corr(ppm_static, 0)
         self.rtlsdr_source_0.set_dc_offset_mode(0, 0)
         self.rtlsdr_source_0.set_iq_balance_mode(0, 0)
         self.rtlsdr_source_0.set_gain_mode(False, 0)
         self.rtlsdr_source_0.set_gain(rfgain_static, 0)
         self.rtlsdr_source_0.set_if_gain(ifgain_static, 0)
         self.rtlsdr_source_0.set_bb_gain(10, 0)
-        self.rtlsdr_source_0.set_antenna("", 0)
+        self.rtlsdr_source_0.set_antenna('', 0)
         self.rtlsdr_source_0.set_bandwidth(0, 0)
           
         self.root_raised_cosine_filter_0 = filter.fir_filter_ccf(1, firdes.root_raised_cosine(
@@ -133,8 +144,8 @@ class atomus_meteor_nogui(gr.top_block):
         self.digital_constellation_soft_decoder_cf_1 = digital.constellation_soft_decoder_cf(digital.constellation_calcdist(([-1-1j, -1+1j, 1+1j, 1-1j]), ([0, 1, 3, 2]), 4, 1).base())
         self.digital_clock_recovery_mm_xx_0 = digital.clock_recovery_mm_cc(sps, clock_alpha_static**2/4.0, 0.5, clock_alpha_static, 0.005)
         self.blocks_float_to_char_0 = blocks.float_to_char(1, 127)
-        self.blocks_file_sink_0 = blocks.file_sink(gr.sizeof_char*1, bitstream_name, False)
-        self.blocks_file_sink_0.set_unbuffered(False)
+        self.bitstream_name_out = blocks.file_sink(gr.sizeof_char*1, bitstream_name, False)
+        self.bitstream_name_out.set_unbuffered(False)
         self.analog_rail_ff_0 = analog.rail_ff(-1, 1)
         self.analog_agc_xx_0 = analog.agc_cc(1000e-4, 0.5, 1.0)
         self.analog_agc_xx_0.set_max_gain(4000)
@@ -142,32 +153,36 @@ class atomus_meteor_nogui(gr.top_block):
         ##################################################
         # Connections
         ##################################################
-        self.connect((self.analog_agc_xx_0, 0), (self.root_raised_cosine_filter_0, 0))
-        self.connect((self.analog_rail_ff_0, 0), (self.blocks_float_to_char_0, 0))
-        self.connect((self.blocks_float_to_char_0, 0), (self.blocks_file_sink_0, 0))
-        self.connect((self.digital_clock_recovery_mm_xx_0, 0), (self.digital_constellation_soft_decoder_cf_1, 0))
-        self.connect((self.digital_constellation_soft_decoder_cf_1, 0), (self.analog_rail_ff_0, 0))
-        self.connect((self.digital_costas_loop_cc_0, 0), (self.digital_clock_recovery_mm_xx_0, 0))
-        self.connect((self.rational_resampler_xxx_0, 0), (self.analog_agc_xx_0, 0))
-        self.connect((self.root_raised_cosine_filter_0, 0), (self.digital_costas_loop_cc_0, 0))
-        self.connect((self.rtlsdr_source_0, 0), (self.rational_resampler_xxx_0, 0))
+        self.connect((self.analog_agc_xx_0, 0), (self.root_raised_cosine_filter_0, 0))    
+        self.connect((self.analog_rail_ff_0, 0), (self.blocks_float_to_char_0, 0))    
+        self.connect((self.blocks_float_to_char_0, 0), (self.bitstream_name_out, 0))    
+        self.connect((self.digital_clock_recovery_mm_xx_0, 0), (self.digital_constellation_soft_decoder_cf_1, 0))    
+        self.connect((self.digital_constellation_soft_decoder_cf_1, 0), (self.analog_rail_ff_0, 0))    
+        self.connect((self.digital_costas_loop_cc_0, 0), (self.digital_clock_recovery_mm_xx_0, 0))    
+        self.connect((self.rational_resampler_xxx_0, 0), (self.analog_agc_xx_0, 0))    
+        self.connect((self.root_raised_cosine_filter_0, 0), (self.digital_costas_loop_cc_0, 0))    
+        self.connect((self.rtlsdr_source_0, 0), (self.rational_resampler_xxx_0, 0))    
 
+    def get_ppm(self):
+        return self.ppm
 
+    def set_ppm(self, ppm):
+        self.ppm = ppm
 
-    def get_samp_rate_airspy(self):
-        return self.samp_rate_airspy
+    def get_samp_rate_rtl(self):
+        return self.samp_rate_rtl
 
-    def set_samp_rate_airspy(self, samp_rate_airspy):
-        self.samp_rate_airspy = samp_rate_airspy
-        self.set_samp_rate(self.samp_rate_airspy/self.decim)
-        self.rtlsdr_source_0.set_sample_rate(self.samp_rate_airspy)
+    def set_samp_rate_rtl(self, samp_rate_rtl):
+        self.samp_rate_rtl = samp_rate_rtl
+        self.set_samp_rate(self.samp_rate_rtl/self.decim)
+        self.rtlsdr_source_0.set_sample_rate(self.samp_rate_rtl)
 
     def get_decim(self):
         return self.decim
 
     def set_decim(self, decim):
         self.decim = decim
-        self.set_samp_rate(self.samp_rate_airspy/self.decim)
+        self.set_samp_rate(self.samp_rate_rtl/self.decim)
 
     def get_symb_rate(self):
         return self.symb_rate
@@ -185,6 +200,13 @@ class atomus_meteor_nogui(gr.top_block):
         self.set_sps((self.samp_rate*1.0)/(self.symb_rate*1.0))
         self.root_raised_cosine_filter_0.set_taps(firdes.root_raised_cosine(1, self.samp_rate, self.symb_rate, 0.6, 361))
 
+    def get_output_dir(self):
+        return self.output_dir
+
+    def set_output_dir(self, output_dir):
+        self.output_dir = output_dir
+        self.set_bitstream_name(self.bitstream_name)
+
     def get_sps(self):
         return self.sps
 
@@ -199,12 +221,12 @@ class atomus_meteor_nogui(gr.top_block):
         self.rfgain_static = rfgain_static
         self.rtlsdr_source_0.set_gain(self.rfgain_static, 0)
 
-    def get_ppm_r(self):
-        return self.ppm_r
+    def get_ppm_static(self):
+        return self.ppm_static
 
-    def set_ppm_r(self, ppm_r):
-        self.ppm_r = ppm_r
-        self.rtlsdr_source_0.set_freq_corr(self.ppm_r, 0)
+    def set_ppm_static(self, ppm_static):
+        self.ppm_static = ppm_static
+        self.rtlsdr_source_0.set_freq_corr(self.ppm_static, 0)
 
     def get_pll_alpha_static(self):
         return self.pll_alpha_static
@@ -240,13 +262,30 @@ class atomus_meteor_nogui(gr.top_block):
 
     def set_bitstream_name(self, bitstream_name):
         self.bitstream_name = bitstream_name
-        self.blocks_file_sink_0.open(self.bitstream_name)
+        self.bitstream_name_out.open(self.bitstream_name)
 
-if __name__ == '__main__':
-    parser = OptionParser(option_class=eng_option, usage="%prog: [options]")
-    (options, args) = parser.parse_args()
-    tb = atomus_meteor_nogui()
+
+def argument_parser():
+    description = 'This file will receive Meteor MN2 using RTL-SDR and will create 72k soft-division file. It has no GUI. Ctrl+C or something like that kills the program. Based on original by otti.'
+    parser = OptionParser(usage="%prog: [options]", option_class=eng_option, description=description)
+    parser.add_option(
+        "", "--ppm", dest="ppm", type="intx", default=63,
+        help="Set rtl_ppm [default=%default]")
+    return parser
+
+
+def main(top_block_cls=meteor_qpsk, options=None):
+    if options is None:
+        options, _ = argument_parser().parse_args()
+    if gr.enable_realtime_scheduling() != gr.RT_OK:
+        print "Error: failed to enable real-time scheduling."
+
+    tb = top_block_cls(ppm=options.ppm)
     cr = create_lrpt_config()
     print bitstream_name
     tb.start()
     tb.wait()
+
+
+if __name__ == '__main__':
+    main()
