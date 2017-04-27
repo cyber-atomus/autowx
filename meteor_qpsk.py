@@ -32,7 +32,7 @@ image_dir = '/opt/wxsat/img/MeteorMN2/'
 
 bitstream_file = "meteor_LRPT_" + datetime.now().strftime("%d%m%Y_%H%M") + ".s"
 bitstream_name = bitstream_dir+"meteor_LRPT_" + datetime.now().strftime("%d%m%Y_%H%M") + ".s"
-image_name = image_dir+"meteor_LRPT_" + datetime.now().strftime("%d%m%Y_%H%M") + ".bmp"
+image_name = image_dir+"meteor_LRPT_" + datetime.now().strftime("%d%m%Y_%H%M") + ".125"
 
 rgb_lrpt_file = lrpt_dir+"rgb.ini"
 mono_lrpt_file = lrpt_dir+"mono.ini"
@@ -82,8 +82,8 @@ class create_lrpt_config():
 	g=open(meteor_decode_script,'w+')
 	g.write("#!/bin/bash\n")
 	g.write("\n")
-	g.write("/usr/local/bin/medet "+bitstream_name+" "+image_name+" >/tmp/METEOR_DECODE.log 2>&1\n")
-	g.write("convert "+image_name+".bmp "+image_name+".jpg")
+	g.write("/usr/local/bin/medet "+bitstream_name+" "+image_name+" -t >/opt/tmp/METEOR_DECODE.log 2>&1\n")
+#	g.write("convert -quality 97 "+image_name+".bmp "+image_name+".jpg")
 	g.write("\n")
 	g.close
 	os.chmod(meteor_decode_script, 0755)
@@ -91,7 +91,7 @@ class create_lrpt_config():
 
 class meteor_qpsk(gr.top_block):
 
-    def __init__(self, ppm=63):
+    def __init__(self, ppm=36):
         gr.top_block.__init__(self, "Meteor QPSK soft-division generator")
 
         ##################################################
@@ -102,16 +102,16 @@ class meteor_qpsk(gr.top_block):
         ##################################################
         # Variables
         ##################################################
-        self.samp_rate_rtl = samp_rate_rtl = 1406250
-        self.decim = decim = 9
+        self.samp_rate_rtl = samp_rate_rtl = 1250000
+        self.decim = decim = 8
         self.symb_rate = symb_rate = 72000
         self.samp_rate = samp_rate = samp_rate_rtl/decim
         self.output_dir = output_dir = bitstream_dir
         self.sps = sps = (samp_rate*1.0)/(symb_rate*1.0)
-        self.rfgain_static = rfgain_static = 43
-        self.ppm_static = ppm_static = 63
+        self.rfgain_static = rfgain_static = 39
+        self.ppm_static = ppm_static = 32
         self.pll_alpha_static = pll_alpha_static = 0.015
-        self.ifgain_static = ifgain_static = 43
+        self.ifgain_static = ifgain_static = 39
         self.freq = freq = 137900000
         self.clock_alpha_static = clock_alpha_static = 0.001
         self.bitstream_name = bitstream_name
@@ -131,7 +131,7 @@ class meteor_qpsk(gr.top_block):
         self.rtlsdr_source_0.set_bb_gain(10, 0)
         self.rtlsdr_source_0.set_antenna('', 0)
         self.rtlsdr_source_0.set_bandwidth(0, 0)
-          
+
         self.root_raised_cosine_filter_0 = filter.fir_filter_ccf(1, firdes.root_raised_cosine(
         	1, samp_rate, symb_rate, 0.6, 361))
         self.rational_resampler_xxx_0 = filter.rational_resampler_ccc(
@@ -153,15 +153,15 @@ class meteor_qpsk(gr.top_block):
         ##################################################
         # Connections
         ##################################################
-        self.connect((self.analog_agc_xx_0, 0), (self.root_raised_cosine_filter_0, 0))    
-        self.connect((self.analog_rail_ff_0, 0), (self.blocks_float_to_char_0, 0))    
-        self.connect((self.blocks_float_to_char_0, 0), (self.bitstream_name_out, 0))    
-        self.connect((self.digital_clock_recovery_mm_xx_0, 0), (self.digital_constellation_soft_decoder_cf_1, 0))    
-        self.connect((self.digital_constellation_soft_decoder_cf_1, 0), (self.analog_rail_ff_0, 0))    
-        self.connect((self.digital_costas_loop_cc_0, 0), (self.digital_clock_recovery_mm_xx_0, 0))    
-        self.connect((self.rational_resampler_xxx_0, 0), (self.analog_agc_xx_0, 0))    
-        self.connect((self.root_raised_cosine_filter_0, 0), (self.digital_costas_loop_cc_0, 0))    
-        self.connect((self.rtlsdr_source_0, 0), (self.rational_resampler_xxx_0, 0))    
+        self.connect((self.analog_agc_xx_0, 0), (self.root_raised_cosine_filter_0, 0))
+        self.connect((self.analog_rail_ff_0, 0), (self.blocks_float_to_char_0, 0))
+        self.connect((self.blocks_float_to_char_0, 0), (self.bitstream_name_out, 0))
+        self.connect((self.digital_clock_recovery_mm_xx_0, 0), (self.digital_constellation_soft_decoder_cf_1, 0))
+        self.connect((self.digital_constellation_soft_decoder_cf_1, 0), (self.analog_rail_ff_0, 0))
+        self.connect((self.digital_costas_loop_cc_0, 0), (self.digital_clock_recovery_mm_xx_0, 0))
+        self.connect((self.rational_resampler_xxx_0, 0), (self.analog_agc_xx_0, 0))
+        self.connect((self.root_raised_cosine_filter_0, 0), (self.digital_costas_loop_cc_0, 0))
+        self.connect((self.rtlsdr_source_0, 0), (self.rational_resampler_xxx_0, 0))
 
     def get_ppm(self):
         return self.ppm
@@ -205,7 +205,7 @@ class meteor_qpsk(gr.top_block):
 
     def set_output_dir(self, output_dir):
         self.output_dir = output_dir
-        self.set_bitstream_name(self.bitstream_name)
+        self.set_bitstream_name(self.output_dir+"meteor_LRPT_" + datetime.now().strftime("%d%m%Y_%H%M") + ".s")
 
     def get_sps(self):
         return self.sps
