@@ -24,18 +24,24 @@ import osmosdr
 import os
 import os, shutil
 import sys
+import cfg
 
-meteor_decode_script = '/PATH_TO_SCRIPTS/meteor_decode.sh'
-bitstream_dir = 'PATH_TO_BITSTREAM_FILES'
-lrpt_dir = 'PATH_TO_OLEG_OFFLINE_DECODER'
-image_dir = '/opt/wxsat/img/MeteorMN2/'
+if len(sys.argv) > 2:
+	print("Usage: {} [autowx.ini]".format(sys.argv[0]))
+	exit(-1)
+elif len(sys.argv) == 2:
+	configFile = sys.argv[1]
+else:
+	configFile = 'autowx.ini'
+
+config = cfg.get(configFile)
 
 bitstream_file = "meteor_LRPT_" + datetime.now().strftime("%d%m%Y_%H%M") + ".s"
-bitstream_name = bitstream_dir+"meteor_LRPT_" + datetime.now().strftime("%d%m%Y_%H%M") + ".s"
-image_name = image_dir+"meteor_LRPT_" + datetime.now().strftime("%d%m%Y_%H%M") + ".125"
+bitstream_name = config.get('METEOR', 'bitstreams')+"meteor_LRPT_" + datetime.now().strftime("%d%m%Y_%H%M") + ".s"
+image_name = config.get('METEOR', 'imgs')+"meteor_LRPT_" + datetime.now().strftime("%d%m%Y_%H%M") + ".125"
 
-rgb_lrpt_file = lrpt_dir+"rgb.ini"
-mono_lrpt_file = lrpt_dir+"mono.ini"
+rgb_lrpt_file = config.get('METEOR', 'lrpts')+"rgb.ini"
+mono_lrpt_file = config.get('METEOR', 'lrpts')+"mono.ini"
 
 #Remember to unescape backslashes!!!
 BITSTREAM_WINDOWS_DIR="D:\\"
@@ -77,16 +83,16 @@ class create_lrpt_config():
 	m.write("path="+IMAGES_WINDOWS_DIR+"\r\n")
 	m.close
 
-	if os.path.isfile(meteor_decode_script):
-	    os.unlink(meteor_decode_script)
-	g=open(meteor_decode_script,'w+')
+	if os.path.isfile(config.get('METEOR', 'decode_script')):
+	    os.unlink(config.get('METEOR', 'decode_script'))
+	g=open(config.get('METEOR', 'decode_script'),'w+')
 	g.write("#!/bin/bash\n")
 	g.write("\n")
 	g.write("/usr/local/bin/medet "+bitstream_name+" "+image_name+" -t >/opt/tmp/METEOR_DECODE.log 2>&1\n")
 #	g.write("convert -quality 97 "+image_name+".bmp "+image_name+".jpg")
 	g.write("\n")
 	g.close
-	os.chmod(meteor_decode_script, 0755)
+	os.chmod(config.get('METEOR', 'decode_script'), 0755)
 
 
 class meteor_qpsk(gr.top_block):
@@ -106,7 +112,7 @@ class meteor_qpsk(gr.top_block):
         self.decim = decim = 8
         self.symb_rate = symb_rate = 72000
         self.samp_rate = samp_rate = samp_rate_rtl/decim
-        self.output_dir = output_dir = bitstream_dir
+        self.output_dir = output_dir = config.get('METEOR', 'bitstreams')
         self.sps = sps = (samp_rate*1.0)/(symb_rate*1.0)
         self.rfgain_static = rfgain_static = 39
         self.ppm_static = ppm_static = 32
