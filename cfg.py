@@ -1,4 +1,6 @@
+# -*- coding: utf-8 -*-
 from ConfigParser import ConfigParser
+
 
 class MyConfigParser(ConfigParser):
     def getlist(self,section,option):
@@ -11,4 +13,5 @@ class MyConfigParser(ConfigParser):
 
 def get(file):
     config = MyConfigParser()
-    return config.read(file)
+    config.read(file)
+    return config
