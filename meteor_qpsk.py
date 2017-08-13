@@ -87,7 +87,7 @@ class CreateLrptConfig:
         g = open(config.get('METEOR', 'decode_script'), 'w+')
         g.write("#!/bin/bash\n")
         g.write("\n")
-        g.write("/usr/local/bin/medet " + bitstream_name + " " + image_name + " -t >/opt/tmp/METEOR_DECODE.log 2>&1\n")
+        g.write("/usr/local/bin/medet " + bitstream_name + " " + image_name + " -t >/tmp/METEOR_DECODE.log 2>&1\n")
         # g.write("convert -quality 97 "+image_name+".bmp "+image_name+".jpg")
         g.write("\n")
         g.close()
