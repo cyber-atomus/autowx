@@ -87,7 +87,7 @@ else:
     wxDecodeOpt = '-C wxDecodeAll:no'
 
 if config.getboolean('PROCESSING', 'wxAddTextOverlay'):
-    wxAddText = '-k ' + config.get('PROCESSING', 'wxOverlayText') + ' %g %T/%E%p%^%z/e:%e %C'
+    wxAddText = "-k '" + config.get('PROCESSING', 'wxOverlayText') + "' %g %T/%E%p%^%z/e:%e %C"
 else:
     wxAddText = '-C wxOther:noOverlay'
 
