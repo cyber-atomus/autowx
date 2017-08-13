@@ -34,12 +34,12 @@ elif len(sys.argv) == 2:
 
 config = cfg.get(configFile)
 
-bitstream_file = "meteor_LRPT_" + datetime.now().strftime("%d%m%Y_%H%M") + ".s"
-bitstream_name = config.get('METEOR', 'bitstreams') + "meteor_LRPT_" + datetime.now().strftime("%d%m%Y_%H%M") + ".s"
-image_name = config.get('METEOR', 'imgs') + "meteor_LRPT_" + datetime.now().strftime("%d%m%Y_%H%M") + ".125"
+bitstream_file = "meteor_LRPT_{}.s".format(datetime.now().strftime("%d%m%Y_%H%M"))
+bitstream_name = os.path.join(config.get('METEOR', 'bitstreams'), "meteor_LRPT_{}.s".format(datetime.now().strftime("%d%m%Y_%H%M")))
+image_name = os.path.join(config.get('METEOR', 'imgs'), "meteor_LRPT_{}.125".format(datetime.now().strftime("%d%m%Y_%H%M")))
 
-rgb_lrpt_file = config.get('METEOR', 'lrpts') + "rgb.ini"
-mono_lrpt_file = config.get('METEOR', 'lrpts') + "mono.ini"
+rgb_lrpt_file = os.path.join(config.get('METEOR', 'lrpts'), "rgb.ini")
+mono_lrpt_file = os.path.join(config.get('METEOR', 'lrpts'), "mono.ini")
 
 # Remember to unescape backslashes!!!
 BITSTREAM_WINDOWS_DIR = "D:\\"
