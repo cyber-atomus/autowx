@@ -306,7 +306,7 @@ def decode(filename, aos_time, sat_name, max_elev, record_len):
                 print logLineStart + 'Creating ' + enhancements + ' enhancement image' + logLineEnd
                 enhancements_log_file = os.path.join(config.get('DIRS', 'img'),
                                                      sat_name,
-                                                     "{}-map.jpg.txt".format(enhancements))
+                                                     "{}-{}-map.jpg.txt".format(file_name_c, enhancements))
                 enhancements_log = open(enhancements_log_file, "w+")
                 enhancements_log.write(
                     '\nEnhancement: ' + enhancements + ', SAT: ' + str(xf_no_space) + ', Elevation max: ' + str(
