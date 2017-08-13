@@ -129,7 +129,6 @@ def record_fm(frequency, filename, sleep_for, xf_filename):
 
 def record_qpsk(sleep_for):
     print AsciiColors.GRAY
-    xf_no_space = xfname.replace(" ", "")
     cmdline = [os.path.join(config.get('DIRS', 'system'), 'meteor_qpsk.py'),
                configFile]
     run_for_duration(cmdline, sleep_for)
@@ -138,25 +137,24 @@ def record_qpsk(sleep_for):
 # Status builder. Crazy shit. These are only examples, do what you want :)
 def write_status(frequency, aos_time, los_time, los_time_unix, record_time, xf_name, max_elev, status):
     aos_time_str = strftime('%H:%M:%S', time.localtime(aos_time))
-    pass_img_file = strftime('%Y%m%d-%H%M', time.localtime(aos_time)) + '-pass-img.png'
     stat_file = open(config.get('DIRS', 'status'), 'w+')
     if status == 'RECORDING':
-        stat_file.write("RECEIVING;yes;" + str(xf_name) +
+        stat_file.write("RECEIVING;yes;" + str(xf_name) + " QRG" + str(frequency) +
                         ' AOS@' + str(aos_time_str) + ' LOS@' + str(los_time) +
                         ' REC@' + str(record_time) + 's. max el.@' + str(max_elev) + '°' + ';' +
                         str(xf_name) + '-' + strftime('%Y%m%d-%H%M', time.localtime(aos_time)))
 
     elif status == 'DECODING':
-        stat_file.write('RECEIVING;no;Decoding ' + str(xf_name) + ';' + str(xf_name) +
+        stat_file.write('RECEIVING;no;Decoding ' + str(xf_name) + " QRG" + str(frequency) + ';' + str(xf_name) +
                         '-' + strftime('%Y%m%d-%H%M', time.localtime(aos_time)))
 
     elif status == 'WAITING':
-        stat_file.write('RECEIVING;no;' + str(xf_name) + ' (AOS@' + str(aos_time_str) + ') @' +
-                        str(max_elev) + '° elev. max' + ';' + str(xf_name) +
+        stat_file.write('RECEIVING;no;' + str(xf_name) + " QRG" + str(frequency) +
+                        ' (AOS@' + str(aos_time_str) + ') @' + str(max_elev) + '° elev. max' + ';' + str(xf_name) +
                         '-' + strftime('%Y%m%d-%H%M', time.localtime(los_time_unix)))
 
     elif status == 'TOOLOW':
-        stat_file.write('RECEIVING;no;' + str(xf_name) +
+        stat_file.write('RECEIVING;no;' + str(xf_name) + " QRG" + str(frequency) +
                         ' (AOS@' + str(aos_time_str) + ') too low (' + str(max_elev) + '°), waiting ' +
                         str(record_time) + 's.')
 
