@@ -203,14 +203,14 @@ def create_overlay(filename, aos_time, sat_name, record_len):
     # recLenC='2'
     mapfname = os.path.join(config.get('DIRS', 'map'), filename)
     cmdline = ['wxmap',
-               '-T', sat_name,
+               '-T', "'{}'".format(sat_name),
                '-G', config.get('DIRS', 'tle'),
                '-H', config.get('DIRS', 'tleFile'),
                '-M', '0',
                '-o',
                '-A', '0',
                '-O', str(rec_len_c),
-               '-L', config.get('QTH', 'lat') + '/' + config.get('QTH', 'lat') + '/' + config.get('QTH', 'alt'),
+               '-L', config.get('QTH', 'lat') + '/' + config.get('QTH', 'lon') + '/' + config.get('QTH', 'alt'),
                str(aos_time_o), mapfname + '-map.png']
     overlay_log = open(mapfname + '-map.png.txt', "w+")
 
