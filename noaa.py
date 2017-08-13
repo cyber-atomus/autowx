@@ -141,7 +141,7 @@ def write_status(frequency, aos_time, los_time, los_time_unix, record_time, xf_n
     if status == 'RECORDING':
         stat_file.write("RECEIVING;yes;" + str(xf_name) + " QRG" + str(frequency) +
                         ' AOS@' + str(aos_time_str) + ' LOS@' + str(los_time) +
-                        ' REC@' + str(record_time) + 's. max el.@' + str(max_elev) + '\N{DEGREE SIGN}' + ';' +
+                        ' REC@' + str(record_time) + 's. max el.@' + str(max_elev) + '\xb0' + ';' +
                         str(xf_name) + '-' + strftime('%Y%m%d-%H%M', time.localtime(aos_time)))
 
     elif status == 'DECODING':
@@ -150,12 +150,12 @@ def write_status(frequency, aos_time, los_time, los_time_unix, record_time, xf_n
 
     elif status == 'WAITING':
         stat_file.write('RECEIVING;no;' + str(xf_name) + " QRG" + str(frequency) +
-                        ' (AOS@' + str(aos_time_str) + ') @' + str(max_elev) + '\N{DEGREE SIGN} elev. max' + ';' + str(xf_name) +
-                        '-' + strftime('%Y%m%d-%H%M', time.localtime(los_time_unix)))
+                        ' (AOS@' + str(aos_time_str) + ') @' + str(max_elev) + "\xb0 elev. max" + ';' +
+                        str(xf_name) + '-' + strftime('%Y%m%d-%H%M', time.localtime(los_time_unix)))
 
     elif status == 'TOOLOW':
         stat_file.write('RECEIVING;no;' + str(xf_name) + " QRG" + str(frequency) +
-                        ' (AOS@' + str(aos_time_str) + ') too low (' + str(max_elev) + '\N{DEGREE SIGN}), waiting ' +
+                        ' (AOS@' + str(aos_time_str) + ') too low (' + str(max_elev) + '\xb0), waiting ' +
                         str(record_time) + 's.')
 
     stat_file.close()
@@ -627,7 +627,7 @@ while True:
             0] + AsciiColors.OKGREEN + " seconds  (" + AsciiColors.CYAN + aosTimeCnv + AsciiColors.OKGREEN + " to " + \
               AsciiColors.CYAN + losTimeCnv + ", " + str(
             duration) + AsciiColors.OKGREEN + "s.) for " + AsciiColors.YELLOW + satName + AsciiColors.OKGREEN + \
-              " @ " + AsciiColors.CYAN + str(maxElev) + AsciiColors.OKGREEN + "\N{DEGREE SIGN} el. " + logLineEnd
+              " @ " + AsciiColors.CYAN + str(maxElev) + AsciiColors.OKGREEN + "\xb0 el. " + logLineEnd
         write_status(freq, aosTime, losTimeCnv, aosTime, towait, satName, maxElev, 'WAITING')
         time.sleep(towait)
 
@@ -643,7 +643,7 @@ while True:
     fname = str(aosTime)
     xfname = satName
     print logLineStart + "Beginning pass of " + AsciiColors.YELLOW + satName + AsciiColors.OKGREEN + " at " + \
-          AsciiColors.CYAN + str(maxElev) + "\N{DEGREE SIGN}" + AsciiColors.OKGREEN + " elev.\n" + logLineStart + \
+          AsciiColors.CYAN + str(maxElev) + "\xb0" + AsciiColors.OKGREEN + " elev.\n" + logLineStart + \
           "Predicted start " + AsciiColors.CYAN + aosTimeCnv + AsciiColors.OKGREEN + " and end " + AsciiColors.CYAN + \
           losTimeCnv + AsciiColors.OKGREEN + ".\n" + logLineStart + "Will record for " + AsciiColors.CYAN + \
           str(recordTime).split(".")[0] + AsciiColors.OKGREEN + " seconds." + logLineEnd
