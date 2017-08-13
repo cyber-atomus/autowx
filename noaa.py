@@ -111,15 +111,15 @@ def record_fm(frequency, filename, sleep_for, xf_filename):
 
     cmdline = ['/usr/bin/rtl_fm',
                '-f', str(frequency),
-               '-s', config.getint('SDR', 'sample'),
-               '-g', config.getint('SDR', 'gain'),
+               '-s', config.get('SDR', 'sample'),
+               '-g', config.get('SDR', 'gain'),
                '-F', '9',
                '-l', '0',
                '-t', '900',
                '-A', 'fast',
                '-E', 'offset',
                # '-E','pad',
-               '-p', config.getint('SDR', 'shift'),
+               '-p', config.get('SDR', 'shift'),
                output_file]
 
     log_cmdline("RECORD FM", cmdline)
@@ -170,7 +170,7 @@ def transcode(filename):
 
     cmdlinesox = ['sox',
                   '-t', 'raw',
-                  '-r', config.getint('SDR', 'sample'),
+                  '-r', config.get('SDR', 'sample'),
                   '-es',
                   '-b', '16',
                   '-c', '1',
@@ -178,7 +178,7 @@ def transcode(filename):
                   in_file,
                   out_file,
                   'rate',
-                  config.getint('SDR', 'wavrate')]
+                  config.get('SDR', 'wavrate')]
 
     log_cmdline("SOX", cmdlinesox)
 
@@ -257,7 +257,7 @@ def decode(filename, aos_time, sat_name, max_elev, record_len):
                    wxAddText,
                    '-A', '-o', '-R1',
                    '-t', 'NOAA',
-                   '-Q ' + config.getint('PROCESSING', 'wxJPEGQuality'),
+                   '-Q ' + config.get('PROCESSING', 'wxJPEGQuality'),
                    in_wav,
                    out_img]
         log_cmdline("DECODE WXTOIMG NORMALMAP", cmdline)
