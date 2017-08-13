@@ -652,7 +652,8 @@ while True:
     if xfname in ('NOAA 15', 'NOAA 19', 'NOAA 18'):
         record_wav(freq, fname, recordTime, xfname)
     elif xfname == 'METEOR-M 2':
-        record_qpsk(recordTime)
+        if config.getboolean("PROCESSING", "recordMeteor"):
+            record_qpsk(recordTime)
     print logLineStart + "Decoding data" + logLineEnd
     if xfname in ('NOAA 15', 'NOAA 19', 'NOAA 18'):
         write_status(freq, aosTime, losTimeCnv, str(losTime), str(recordTime).split(".")[0], satName, maxElev,
