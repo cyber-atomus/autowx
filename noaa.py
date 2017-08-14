@@ -66,6 +66,7 @@ class Logger(object):
 def log_cmdline(what, cmdline):
     if config.getboolean("LOG", 'debug'):
         print logLineStart + what + ": '" + " ".join(cmdline) + "'" + logLineEnd
+        print cmdline
 
 
 pid = str(os.getpid())
@@ -203,7 +204,7 @@ def create_overlay(filename, aos_time, sat_name, record_len):
     # recLenC='2'
     mapfname = os.path.join(config.get('DIRS', 'map'), filename)
     cmdline = ['wxmap',
-               '-T', "'{}'".format(sat_name),
+               '-T', sat_name,
                '-G', config.get('DIRS', 'tle'),
                '-H', config.get('DIRS', 'tleFile'),
                '-M', '0',
@@ -214,7 +215,7 @@ def create_overlay(filename, aos_time, sat_name, record_len):
                str(aos_time_o), mapfname + '-map.png']
     overlay_log = open(mapfname + '-map.png.txt', "w+")
 
-    log_cmdline('CREATE OVERLAY WXMAP', cmdline)
+    log_cmdline('CREATE OVRLAY WXMAP', cmdline)
 
     subprocess.call(cmdline, stderr=overlay_log, stdout=overlay_log)
     overlay_log.close()
