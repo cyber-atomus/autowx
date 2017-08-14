@@ -18,10 +18,10 @@ elif len(sys.argv) == 2:
 config = cfg.get(configFile)
 
 # Config
-elNOAA = config.get('QTH', 'minElev')
-elMETEOR = config.get('QTH', 'minElevMeteor')
+elNOAA = config.getint('QTH', 'minElev')
+elMETEOR = config.getint('QTH', 'minElevMeteor')
 tleFileName = os.path.join(config.get('DIRS', 'tle'), config.get('DIRS', 'tleFile'))
-qth = (config.getfloat('QTH', 'lat'), config.getfloat('QTH', 'lon'))
+qth = (config.getfloat('QTH', 'lat'), config.getfloat('QTH', 'lon'), config.getint('QTH', 'alt'))
 
 # The rest
 NOAA15 = []
