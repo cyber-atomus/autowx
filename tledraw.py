@@ -24,9 +24,9 @@ config = cfg.get(configFile)
 # Config
 passImgDir = config.get("DIRS", 'passesImgs')
 tleFileName = os.path.join(config.get('DIRS', 'tle'), config.get('DIRS', 'tleFile'))
-elNOAA = config.get('QTH', 'minElev')
-elMETEOR = config.get('QTH', 'minElevMeteor')
-qth = (config.getfloat('QTH', 'lat'), config.getfloat('QTH', 'lon'))
+elNOAA = config.getint('QTH', 'minElev')
+elMETEOR = config.getint('QTH', 'minElevMeteor')
+qth = (config.getfloat('QTH', 'lat'), config.getfloat('QTH', 'lon'), config.getint('QTH', 'alt'))
 
 # The rest
 NOAA15 = []
